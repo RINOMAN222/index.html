@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HALOGEN.SMOOTH — BeamNG Halogen Fade Kit</title>
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Space Grotesk', sans-serif; }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+  ::selection { background: rgba(255,106,0,.35); color: #fff; }
+
+  /* grain */
+  body::before {
+    content:""; position: fixed; inset: 0; z-index: 60; pointer-events: none; opacity: .05;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='0.6'/%3E%3C/svg%3E");
+  }
+
+  .glow { text-shadow: 0 0 34px rgba(255,106,0,.45); }
+
+  /* range sliders */
+  input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 22px; background: transparent; cursor: pointer; }
+  input[type=range]::-webkit-slider-runnable-track { height: 4px; border-radius: 99px; background: #232427; }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none; margin-top: -6px; width: 16px; height: 16px; border-radius: 99px;
+    background: #ff6a00; border: 2px solid #0a0a0b; box-shadow: 0 0 0 2px #ff6a00, 0 0 14px rgba(255,106,0,.55);
+  }
+  input[type=range]::-moz-range-track { height: 4px; border-radius: 99px; background: #232427; }
+  input[type=range]::-moz-range-thumb { width: 14px; height: 14px; border-radius: 99px; background: #ff6a00; border: 2px solid #0a0a0b; box-shadow: 0 0 0 2px #ff6a00, 0 0 14px rgba(255,106,0,.55); }
+
+  input[type=checkbox] { accent-color: #ff6a00; }
+
+  /* code colors */
+  .code .c { color: #5b6169; font-style: italic; }
+  .code .s { color: #ffab66; }
+  .code .n { color: #7dd3fc; }
+  .code .f { color: #c084fc; }
+
+  .chip { border: 1px solid rgba(255,255,255,.08); background: rgba(255,255,255,.03); }
+
+  .btn-power.on {
+    border-color: rgba(255,106,0,.7); color: #ffb066; background: rgba(255,106,0,.1);
+    box-shadow: 0 0 24px rgba(255,106,0,.25), inset 0 0 18px rgba(255,106,0,.08);
+  }
+  .fade-up { opacity: 0; transform: translateY(22px); animation: fadeUp .8s cubic-bezier(.2,.7,.2,1) forwards; }
+  @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+  .d1 { animation-delay: .08s } .d2 { animation-delay: .16s } .d3 { animation-delay: .24s } .d4 { animation-delay: .32s }
+</style>
+</head>
+<body class="bg-[#08090a] text-zinc-200 antialiased overflow-x-hidden">
+
+<!-- ============ HEADER ============ -->
+<header class="fixed top-0 inset-x-0 z-50 border-b border-white/5 bg-[#08090a]/70 backdrop-blur-xl">
+  <div class="max-w-7xl mx-auto px-5 h-14 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="w-7 h-7 rounded-lg bg-[#ff6a00]/10 border border-[#ff6a00]/40 grid place-items-center">
+        <i data-lucide="lightbulb" class="w-4 h-4 text-[#ff6a00]"></i>
+      </div>
+      <span class="font-semibold tracking-wide text-sm">HALOGEN<span class="text-[#ff6a00]">.SMOOTH</span></span>
+      <span class="mono text-[10px] px-2 py-0.5 rounded-full chip text-zinc-400 hidden sm:inline">BeamNG.v0.34+</span>
+    </div>
+    <nav class="hidden md:flex items-center gap-6 mono text-[11px] uppercase tracking-widest text-zinc-500">
+      <a href="#preview" class="hover:text-[#ffb066] transition-colors">Preview</a>
+      <a href="#tune" class="hover:text-[#ffb066] transition-colors">Tune</a>
+      <a href="#code" class="hover:text-[#ffb066] transition-colors">Code</a>
+      <a href="#install" class="hover:text-[#ffb066] transition-colors">Install</a>
+    </nav>
+    <a href="#code" class="mono text-[11px] px-3 py-1.5 rounded-full bg-[#ff6a00] text-black font-semibold hover:bg-[#ffb066] transition-colors flex items-center gap-1.5">
+      <i data-lucide="file-code-2" class="w-3.5 h-3.5"></i> GET THE JBEAM
+    </a>
+  </div>
+</header>
+
+<main class="pt-14">
+
+  <!-- ============ HERO / PREVIEW ============ -->
+  <section id="preview" class="max-w-7xl mx-auto px-5 pt-14 pb-10">
+    <div class="grid lg:grid-cols-[1fr_1.35fr] gap-10 items-center">
+
+      <!-- left copy + controls -->
+      <div>
+        <p class="mono text-[11px] tracking-[.3em] text-[#ff6a00] uppercase fade-up">BeamNG light kit</p>
+        <h1 class="text-5xl md:text-6xl font-bold leading-[0.95] mt-4 fade-up d1">
+          Halogen,<br>the way it<br><span class="text-[#ff6a00] glow">should feel.</span>
+        </h1>
+        <p class="text-zinc-400 mt-5 max-w-md leading-relaxed fade-up d2">
+          No more instant LED-style light snapping on. This kit generates the jbeam that makes your car's lights
+          <span class="text-zinc-200">glow up warm and dim down slow</span> — like a real filament bulb.
+          Tune it below, steal the code, drop it in your mod.
+        </p>
+
+        <!-- power controls -->
+        <div class="flex flex-wrap gap-3 mt-7 fade-up d3">
+          <button id="btnLow" class="btn-power on flex items-center gap-2 px-4 py-2.5 rounded-full border border-white/10 mono text-xs tracking-wider transition-all">
+            <i data-lucide="power" class="w-4 h-4"></i> LOW BEAM
+          </button>
+          <button id="btnHigh" class="btn-power flex items-center gap-2 px-4 py-2.5 rounded-full border border-white/10 mono text-xs tracking-wider transition-all">
+            <i data-lucide="zap" class="w-4 h-4"></i> HIGH BEAM
+          </button>
+          <button id="btnCompare" class="btn-power flex items-center gap-2 px-4 py-2.5 rounded-full border border-white/10 mono text-xs tracking-wider transition-all">
+            <i data-lucide="columns-2" class="w-4 h-4"></i> A/B STOCK
+          </button>
+          <button id="btnCycle" class="btn-power flex items-center gap-2 px-4 py-2.5 rounded-full border border-white/10 mono text-xs tracking-wider transition-all">
+            <i data-lucide="rotate-ccw" class="w-4 h-4"></i> AUTO-CYCLE
+          </button>
+        </div>
+
+        <!-- stat chips -->
+        <div class="flex flex-wrap gap-2 mt-6 fade-up d4">
+          <div class="chip rounded-xl px-3 py-2 flex items-center gap-2">
+            <i data-lucide="timer" class="w-3.5 h-3.5 text-[#ff6a00]"></i>
+            <span class="mono text-[11px] text-zinc-300">warm-up <span id="statWarm" class="text-[#ffb066]">~0.30s</span></span>
+          </div>
+          <div class="chip rounded-xl px-3 py-2 flex items-center gap-2">
+            <i data-lucide="timer-off" class="w-3.5 h-3.5 text-[#ff6a00]"></i>
+            <span class="mono text-[11px] text-zinc-300">cool-down <span id="statCool" class="text-[#ffb066]">~0.38s</span></span>
+          </div>
+          <div class="chip rounded-xl px-3 py-2 flex items-center gap-2">
+            <i data-lucide="thermometer" class="w-3.5 h-3.5 text-[#ff6a00]"></i>
+            <span class="mono text-[11px] text-zinc-300"><span id="statK">2950</span>K halogen</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- right: live preview -->
+      <div class="fade-up d2">
+        <div class="rounded-2xl border border-white/8 bg-[#0b0c0d] overflow-hidden shadow-[0_0_80px_rgba(255,106,0,0.07)]">
+          <div class="flex items-center justify-between px-4 py-3 border-b border-white/5">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-[#ff6a00] animate-pulse"></span>
+              <span class="mono text-[10px] tracking-[.25em] text-zinc-500 uppercase">Night wall test — live sim</span>
+            </div>
+            <span class="mono text-[10px] text-zinc-500" id="readout">FILAMENT 0% · OFF</span>
+          </div>
+          <div class="relative">
+            <canvas id="scene" class="w-full block" style="height: 380px;"></canvas>
+          </div>
+          <div class="border-t border-white/5 px-4 pt-3 pb-1">
+            <div class="flex items-center justify-between mb-1">
+              <span class="mono text-[10px] text-zinc-500">filament intensity / time — <span class="text-zinc-600">stock (dashed)</span> vs <span class="text-[#ff6a00]">halogen</span></span>
+              <span class="mono text-[10px] text-zinc-600">4.2s cycle</span>
+            </div>
+            <canvas id="chart" class="w-full block" style="height: 72px;"></canvas>
+          </div>
+        </div>
+        <p class="mono text-[10px] text-zinc-600 mt-3 flex items-center gap-1.5">
+          <i data-lucide="info" class="w-3 h-3"></i>
+          Simulated with the same logic the game uses: smooth electric + color offsets shifting red as the filament cools.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TUNE ============ -->
+  <section id="tune" class="max-w-7xl mx-auto px-5 py-14">
+    <div class="flex items-end justify-between mb-8">
+      <div>
+        <p class="mono text-[11px] tracking-[.3em] text-[#ff6a00] uppercase">01 — Tune</p>
+        <h2 class="text-3xl md:text-4xl font-bold mt-2">Dial in the filament</h2>
+      </div>
+      <span class="mono text-[10px] text-zinc-600 hidden md:block">EVERY SLIDER UPDATES THE CODE LIVE</span>
+    </div>
+
+    <div class="grid md:grid-cols-2 xl:grid-cols-4 gap-4">
+
+      <!-- timing -->
+      <div class="rounded-2xl border border-white/8 bg-[#0b0c0d] p-5">
+        <div class="flex items-center gap-2 mb-5">
+          <i data-lucide="timer" class="w-4 h-4 text-[#ff6a00]"></i>
+          <h3 class="font-semibold text-sm">Fade timing</h3>
+        </div>
+        <label class="block mb-5">
+          <div class="flex justify-between mono text-[11px] text-zinc-400 mb-1">
+            <span>warm-up speed</span><span id="vIn" class="text-[#ffb066]">10</span>
+          </div>
+          <input id="sIn" type="range" min="2" max="20" step="1" value="10">
+          <div class="flex justify-between mono text-[9px] text-zinc-600"><span>slow bulb</span><span>fast bulb</span></div>
+        </label>
+        <label class="block">
+          <div class="flex justify-between mono text-[11px] text-zinc-400 mb-1">
+            <span>cool-down speed</span><span id="vOut" class="text-[#ffb066]">8</span>
+          </div>
+          <input id="sOut" type="range" min="2" max="20" step="1" value="8">
+          <div class="flex justify-between mono text-[9px] text-zinc-600"><span>lingering glow</span><span>quick off</span></div>
+        </label>
+      </div>
+
+      <!-- color -->
+      <div class="rounded-2xl border border-white/8 bg-[#0b0c0d] p-5">
+        <div class="flex items-center gap-2 mb-5">
+          <i data-lucide="thermometer" class="w-4 h-4 text-[#ff6a00]"></i>
+          <h3 class="font-semibold text-sm">Bulb color</h3>
+        </div>
+        <label class="block mb-4">
+          <div class="flex justify-between mono text-[11px] text-zinc-400 mb-1">
+            <span>color temperature</span><span><span id="vK" class="text-[#ffb066]">2950</span>K</span>
+          </div>
+          <input id="sK" type="range" min="1900" max="4300" step="10" value="2950">
+          <div class="flex justify-between mono text-[9px] text-zinc-600"><span>1950s sealed beam</span><span>modern clear</span></div>
+        </label>
+        <div class="rounded-xl border border-white/8 p-3 flex items-center gap-3">
+          <span id="swatch" class="w-8 h-8 rounded-full border border-white/10" style="background: rgb(255,196,134); box-shadow: 0 0 18px rgb(255,196,134);"></span>
+          <div class="mono text-[10px] text-zinc-400 leading-relaxed">
+            <span id="rgbOut">r:255 g:196 b:134</span><br>
+            <span id="kLabel" class="text-zinc-500">classic H4 halogen</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- glow offsets -->
+      <div class="rounded-2xl border border-white/8 bg-[#0b0c0d] p-5">
+        <div class="flex items-center gap-2 mb-5">
+          <i data-lucide="flame" class="w-4 h-4 text-[#ff6a00]"></i>
+          <h3 class="font-semibold text-sm">Warm-up glow</h3>
+        </div>
+        <label class="block mb-5">
+          <div class="flex justify-between mono text-[11px] text-zinc-400 mb-1">
+            <span>green offset</span><span id="vG" class="text-[#ffb066]">60</span>
+          </div>
+          <input id="sG" type="range" min="0" max="120" step="5" value="60">
+        </label>
+        <label class="block mb-5">
+          <div class="flex justify-between mono text-[11px] text-zinc-400 mb-1">
+            <span>blue offset</span><span id="vB" class="text-[#ffb066]">80</span>
+          </div>
+          <input id="sB" type="range" min="0" max="140" step="5" value="80">
+        </label>
+        <label class="block">
+          <div class="flex justify-between mono text-[11px] text-zinc-400 mb-1">
+            <span>flare min scale</span><span id="vF" class="text-[#ffb066]">0.60</span>
+          </div>
+          <input id="sF" type="range" min="0.2" max="1" step="0.05" value="0.6">
+        </label>
+        <p class="mono text-[9px] text-zinc-600 leading-relaxed mt-3">Higher offsets = deeper orange at low power, more dramatic warm-up.</p>
+      </div>
+
+      <!-- which lights -->
+      <div class="rounded-2xl border border-white/8 bg-[#0b0c0d] p-5">
+        <div class="flex items-center gap-2 mb-4">
+          <i data-lucide="list-checks" class="w-4 h-4 text-[#ff6a00]"></i>
+          <h3 class="font-semibold text-sm">Apply to which lights</h3>
+        </div>
+        <div class="space-y-2.5 mono text-[12px] text-zinc-300">
+          <label class="flex items-center gap-2.5 cursor-pointer hover:text-white transition-colors"><input type="checkbox" id="cLow" checked> low beam</label>
+          <label class="flex items-center gap-2.5 cursor-pointer hover:text-white transition-colors"><input type="checkbox" id="cHigh" checked> high beam</label>
+          <label class="flex items-center gap-2.5 cursor-pointer hover:text-white transition-colors"><input type="checkbox" id="cTail"> taillights</label>
+          <label class="flex items-center gap-2.5 cursor-pointer hover:text-white transition-colors"><input type="checkbox" id="cBrake"> brake lights</label>
+          <label class="flex items-center gap-2.5 cursor-pointer hover:text-white transition-colors"><input type="checkbox" id="cFog"> fog lights</label>
+          <label class="flex items-center gap-2.5 cursor-pointer hover:text-white transition-colors"><input type="checkbox" id="cRev"> reverse lights</label>
+          <label class="flex items-center gap-2.5 cursor-pointer hover:text-white transition-colors"><input type="checkbox" id="cSig"> turn signals <span class="text-[9px] text-zinc-600">(soft blink)</span></label>
+        </div>
+        <div class="mt-4 pt-4 border-t border-white/5">
+          <label class="flex items-start gap-2.5 cursor-pointer mono text-[12px] text-zinc-300 hover:text-white transition-colors">
+            <input type="checkbox" id="cDim" checked class="mt-0.5"> dim on starter
+          </label>
+          <p class="mono text-[9px] text-zinc-600 leading-relaxed mt-1.5">Lights dip when you crank the engine, tied to the car's electrical load. Immersion +100.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CODE ============ -->
+  <section id="code" class="max-w-7xl mx-auto px-5 py-14">
+    <div class="flex items-end justify-between mb-8">
+      <div>
+        <p class="mono text-[11px] tracking-[.3em] text-[#ff6a00] uppercase">02 — Code</p>
+        <h2 class="text-3xl md:text-4xl font-bold mt-2">Your jbeam, ready to paste</h2>
+      </div>
+    </div>
+
+    <div class="grid lg:grid-cols-[1fr_2fr] gap-4">
+      <!-- explainer -->
+      <div class="space-y-4">
+        <div class="rounded-2xl border border-white/8 bg-[#0b0c0d] p-5">
+          <div class="flex items-center gap-2 mb-3">
+            <i data-lucide="layers" class="w-4 h-4 text-[#ff6a00]"></i>
+            <h3 class="font-semibold text-sm">How it works</h3>
+          </div>
+          <div class="space-y-4 text-[13px] text-zinc-400 leading-relaxed">
+            <div>
+              <p class="text-zinc-200 font-medium mb-1">1 · The "electrics" block</p>
+              Creates smooth copies of the game's instant light values (like <span class="mono text-[#ffb066] text-[11px]">lowbeam</span>) using a
+              <span class="mono text-[11px] text-zinc-300">temporalNonLinear</span> smoother. This is the official v0.34+ halogen system.
+            </div>
+            <div>
+              <p class="text-zinc-200 font-medium mb-1">2 · Re-point your light props</p>
+              In your car's lights jbeam, change each prop's function from <span class="mono text-[11px] text-[#ffb066]">"lowbeam"</span> to
+              <span class="mono text-[11px] text-[#ffb066]">"lowbeam_filament"</span>. Keep your own node names — only the first argument changes.
+            </div>
+            <div>
+              <p class="text-zinc-200 font-medium mb-1">3 · The "lightScaling" block</p>
+              Handles the color shift: strips green/blue at low power so the light starts dim-orange before reaching full warmth. Exactly how a filament behaves.
+            </div>
+          </div>
+        </div>
+        <div class="rounded-2xl border border-[#ff6a00]/20 bg-[#ff6a00]/5 p-5">
+          <div class="flex items-center gap-2 mb-2">
+            <i data-lucide="wrench" class="w-4 h-4 text-[#ff6a00]"></i>
+            <h3 class="font-semibold text-sm text-[#ffb066]">Lazy option</h3>
+          </div>
+          <p class="text-[13px] text-zinc-400 leading-relaxed">Paste your car's actual jbeam into our chat and I'll wire the whole thing into it directly — merged, matched to your nodes, done.</p>
+        </div>
+      </div>
+
+      <!-- code panel -->
+      <div class="rounded-2xl border border-white/8 bg-[#0b0c0d] overflow-hidden flex flex-col">
+        <div class="flex items-center justify-between px-4 py-3 border-b border-white/5 shrink-0">
+          <div class="flex items-center gap-3">
+            <i data-lucide="file-code-2" class="w-4 h-4 text-[#ff6a00]"></i>
+            <span class="mono text-[11px] text-zinc-400">halogen_fade.jbeam</span>
+            <span class="mono text-[9px] px-2 py-0.5 rounded-full chip text-zinc-500" id="lineCount">—</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <button id="btnCopy" class="mono text-[10px] px-3 py-1.5 rounded-full border border-white/10 hover:border-[#ff6a00]/60 hover:text-[#ffb066] transition-colors flex items-center gap-1.5">
+              <i data-lucide="copy" class="w-3.5 h-3.5"></i> COPY
+            </button>
+            <button id="btnDl" class="mono text-[10px] px-3 py-1.5 rounded-full bg-[#ff6a00] text-black font-semibold hover:bg-[#ffb066] transition-colors flex items-center gap-1.5">
+              <i data-lucide="download" class="w-3.5 h-3.5"></i> .JBEAM
+            </button>
+          </div>
+        </div>
+        <pre id="codeOut" class="code mono text-[12px] leading-6 p-5 overflow-auto flex-1 text-zinc-300" style="max-height: 560px;"></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ INSTALL ============ -->
+  <section id="install" class="max-w-7xl mx-auto px-5 py-14 pb-24">
+    <div class="flex items-end justify-between mb-8">
+      <div>
+        <p class="mono text-[11px] tracking-[.3em] text-[#ff6a00] uppercase">03 — Install</p>
+        <h2 class="text-3xl md:text-4xl font-bold mt-2">Three steps to warm light</h2>
+      </div>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-4">
+      <div class="rounded-2xl border border-white/8 bg-[#0b0c0d] p-6 relative overflow-hidden">
+        <span class="mono text-6xl font-bold text-white/5 absolute -top-2 right-3">1</span>
+        <i data-lucide="package-open" class="w-5 h-5 text-[#ff6a00] mb-4"></i>
+        <h3 class="font-semibold mb-2">Extract your mod</h3>
+        <p class="text-[13px] text-zinc-400 leading-relaxed">Unzip your car into <span class="mono text-[11px] text-zinc-300">Documents/BeamNG.drive/mods/unpacked/</span> (working in unpacked makes iteration instant). Find the main jbeam and the jbeam containing your headlight props.</p>
+      </div>
+      <div class="rounded-2xl border border-white/8 bg-[#0b0c0d] p-6 relative overflow-hidden">
+        <span class="mono text-6xl font-bold text-white/5 absolute -top-2 right-3">2</span>
+        <i data-lucide="replace" class="w-5 h-5 text-[#ff6a00] mb-4"></i>
+        <h3 class="font-semibold mb-2">Merge & re-point</h3>
+        <p class="text-[13px] text-zinc-400 leading-relaxed">Paste the <span class="mono text-[11px] text-zinc-300">"electrics"</span> block into your main car jbeam (inside the big part object, next to "nodes"/"beams"). Then swap each light prop's function name and add the <span class="mono text-[11px] text-zinc-300">lightScaling</span> block + warm <span class="mono text-[11px] text-zinc-300">lightColor</span>.</p>
+      </div>
+      <div class="rounded-2xl border border-white/8 bg-[#0b0c0d] p-6 relative overflow-hidden">
+        <span class="mono text-6xl font-bold text-white/5 absolute -top-2 right-3">3</span>
+        <i data-lucide="car-front" class="w-5 h-5 text-[#ff6a00] mb-4"></i>
+        <h3 class="font-semibold mb-2">Reload & enjoy</h3>
+        <p class="text-[13px] text-zinc-400 leading-relaxed">In game, press <span class="mono text-[11px] text-zinc-300">Ctrl+R</span> to reload the vehicle. Flip the lights at night and watch them breathe. If it's too slow or fast, nudge the smoother rates and reload.</p>
+      </div>
+    </div>
+
+    <div class="mt-6 rounded-2xl border border-white/8 bg-[#0b0c0d] p-5 flex items-start gap-3">
+      <i data-lucide="info" class="w-4 h-4 text-[#ff6a00] mt-0.5 shrink-0"></i>
+      <p class="mono text-[11px] text-zinc-500 leading-relaxed">
+        Requires BeamNG.drive <span class="text-zinc-300">v0.34 or newer</span> (when the devs introduced this system). Jbeam tolerates comments and loose formatting — but if the car already has an
+        <span class="text-zinc-300">"electrics"</span> section with customValues, merge the rows instead of duplicating the block. Debugging: select the car and run
+        <span class="text-[#ffb066]">dump(electrics.values)</span> in the console to confirm your filament values exist.
+      </p>
+    </div>
+  </section>
+</main>
+
+  <!-- ============ YOUR CAR FIX ============ -->
+  <section id="yourcar" class="max-w-7xl mx-auto px-5 py-14 border-t border-white/5">
+    <div class="flex items-end justify-between mb-8">
+      <div>
+        <p class="mono text-[11px] tracking-[.3em] text-[#ff6a00] uppercase">Diagnosed for you</p>
+        <h2 class="text-3xl md:text-4xl font-bold mt-2">Jeep Grand Cherokee (cher8) — found the bug</h2>
+      </div>
+      <span class="mono text-[10px] px-2 py-0.5 rounded-full chip text-zinc-400">cher8.jbeam</span>
+    </div>
+
+    <div class="grid lg:grid-cols-[1fr_1.4fr] gap-5">
+      <div class="space-y-4">
+        <div class="rounded-2xl border border-[#ff6a00]/25 bg-[#ff6a00]/5 p-5">
+          <div class="flex items-center gap-2 mb-2">
+            <i data-lucide="search" class="w-4 h-4 text-[#ff6a00]"></i>
+            <h3 class="font-semibold text-sm text-[#ffb066]">The actual bug</h3>
+          </div>
+          <p class="text-[13px] text-zinc-300 leading-relaxed">
+            Your headlight bulb slots are wired correctly — <span class="mono text-[11px] text-zinc-200">lowbeam_filament</span> /
+            <span class="mono text-[11px] text-zinc-200">highbeam_filament</span> — and your bulb options are already
+            halogen-only (<span class="mono text-[11px] text-zinc-200">headlightBulb_halogen_55W/60W</span>, no LED allowed). Good.
+          </p>
+          <p class="text-[13px] text-zinc-300 leading-relaxed mt-3">
+            But the <span class="mono text-[11px] text-zinc-200">"glowMap"</span> block in your main
+            <span class="mono text-[11px] text-zinc-200">cher8</span> part still points at the raw instant electrics
+            (<span class="mono text-[11px] text-zinc-200">lowhighbeam</span>, <span class="mono text-[11px] text-zinc-200">highbeam</span>,
+            <span class="mono text-[11px] text-zinc-200">brake</span>, <span class="mono text-[11px] text-zinc-200">signal_L/R</span>) instead
+            of the smoothed <span class="mono text-[11px] text-zinc-200">_filament</span> versions you already built.
+            Result: the lens glow snaps instantly while the beam itself fades — looks glitchy/LED-like instead of halogen.
+          </p>
+        </div>
+        <div class="rounded-2xl border border-white/8 bg-[#0b0c0d] p-5">
+          <div class="flex items-center gap-2 mb-2">
+            <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400"></i>
+            <h3 class="font-semibold text-sm">Nothing to change here</h3>
+          </div>
+          <ul class="text-[13px] text-zinc-400 leading-relaxed list-disc list-inside space-y-1.5">
+            <li>Main <span class="mono text-[11px] text-zinc-300">"electrics"</span> customValues + smoothers block — already correct, keep as is</li>
+            <li>Both headlight part files you pasted (<span class="mono text-[11px] text-zinc-300">cher8_headlight_R_SRT</span> /
+              <span class="mono text-[11px] text-zinc-300">cher8_headlight_R</span>) — bulb slots already correctly reference the filament values</li>
+          </ul>
+          <p class="mono text-[10px] text-zinc-600 mt-3 leading-relaxed">
+            Side note: "_SRT" is the smooth projector-style housing (no separate bulb+reflector mesh — reads as modern/LED-ish even on halogen bulbs).
+            The plain <span class="text-zinc-400">cher8_headlight_R</span> part has the classic visible bulb + reflector meshes —
+            pick that config in the parts menu for the more authentic old-school halogen look.
+          </p>
+        </div>
+      </div>
+
+      <div class="rounded-2xl border border-white/8 bg-[#0b0c0d] overflow-hidden flex flex-col">
+        <div class="flex items-center justify-between px-4 py-3 border-b border-white/5 shrink-0">
+          <div class="flex items-center gap-3">
+            <i data-lucide="file-diff" class="w-4 h-4 text-[#ff6a00]"></i>
+            <span class="mono text-[11px] text-zinc-400">corrected "glowMap" — paste over the one in cher8</span>
+          </div>
+          <button id="btnCopyFix" class="mono text-[10px] px-3 py-1.5 rounded-full bg-[#ff6a00] text-black font-semibold hover:bg-[#ffb066] transition-colors flex items-center gap-1.5">
+            <i data-lucide="copy" class="w-3.5 h-3.5"></i> COPY FIX
+          </button>
+        </div>
+        <pre id="fixOut" class="code mono text-[11.5px] leading-6 p-5 overflow-auto flex-1 text-zinc-300" style="max-height: 620px;"></pre>
+      </div>
+    </div>
+
+    <div class="mt-5 rounded-2xl border border-white/8 bg-[#0b0c0d] p-5 flex items-start gap-3">
+      <i data-lucide="info" class="w-4 h-4 text-[#ff6a00] mt-0.5 shrink-0"></i>
+      <p class="mono text-[11px] text-zinc-500 leading-relaxed">
+        Only the exterior lighting rows changed (taillight, brake, signals, low/high beam, fog, reverse, chmsl). The gauge
+        tell-tale rows (<span class="text-zinc-300">cher8g_*</span>) and <span class="text-zinc-300">cher8_gauges</span> were left untouched on
+        purpose — dashboard idiot lights are instant in real cars too, only the exterior bulbs are halogen. Reload the vehicle
+        (<span class="text-zinc-300">Ctrl+R</span>) after pasting.
+      </p>
+    </div>
+  </section>
+
+  <footer class="border-t border-white/5 py-8">
+  <div class="max-w-7xl mx-auto px-5 flex flex-col md:flex-row items-center justify-between gap-3">
+    <span class="mono text-[10px] text-zinc-600">HALOGEN.SMOOTH · built for the night drivers</span>
+    <span class="mono text-[10px] text-zinc-600">glow warm · die slow</span>
+  </div>
+</footer>
+
+<script>
+/* ================= STATE ================= */
+const state = {
+  rateIn: 10, rateOut: 8, kelvin: 2950,
+  offG: 60, offB: 80, flareMin: 0.6,
+  lowOn: true, highOn: false, compare: false, autoCycle: false,
+  dimOnStarter: true,
+  lights: { low: true, high: true, tail: false, brake: false, fog: false, rev: false, sig: false },
+};
+
+/* ================= KELVIN → RGB ================= */
+const clampN = (v,a,b)=>Math.min(b,Math.max(a,v));
+function kelvinToRGB(k){
+  const t = k/100; let r,g,b;
+  r = t<=66 ? 255 : clampN(329.698727446*Math.pow(t-60,-0.1332047592),0,255);
+  g = t<=66 ? clampN(99.4708025861*Math.log(t)-161.1195681661,0,255) : clampN(288.1221695283*Math.pow(t-60,-0.0755148492),0,255);
+  b = t>=66 ? 255 : (t<=19 ? 0 : clampN(138.5177312231*Math.log(t-10)-305.0447927307,0,255));
+  return {r:Math.round(r),g:Math.round(g),b:Math.round(b)};
+}
+function tempLabel(k){
+  if(k<2300) return "deep vintage sealed beam";
+  if(k<2900) return "old school halogen";
+  if(k<3300) return "classic H4 halogen";
+  if(k<3800) return "rally lamp warm";
+  return "modern clear halogen";
+}
+
+/* ================= SMOOTHER SIM (mirrors temporalNonLinear feel) ================= */
+/* exponential approach: tau = 1/rate ; ~95% in 3/rate seconds */
+function approxTime(rate){ return (3/rate); }
+
+/* ================= CANVAS SETUP ================= */
+const scene = document.getElementById('scene');
+const sctx = scene.getContext('2d');
+const chart = document.getElementById('chart');
+const cctx = chart.getContext('2d');
+
+function fitCanvas(c){
+  const dpr = Math.min(window.devicePixelRatio||1, 2);
+  const r = c.getBoundingClientRect();
+  c.width = Math.round(r.width*dpr); c.height = Math.round(r.height*dpr);
+  c.getContext('2d').setTransform(dpr,0,0,dpr,0,0);
+  return {w:r.width, h:r.height};
+}
+let S = fitCanvas(scene), C = fitCanvas(chart);
+addEventListener('resize', ()=>{ S = fitCanvas(scene); C = fitCanvas(chart); });
+
+/* ================= FILAMENT PHYSICS ================= */
+let pLow = 0, pHigh = 0;
+function stepFilament(p, target, dt){
+  const rate = target > p ? state.rateIn : state.rateOut;
+  const k = 1 - Math.exp(-rate*dt);
+  return p + (target-p)*k;
+}
+
+/* partial-power color: lightColor minus offsets*(1-p), same math as game lightScaling */
+function partialColor(p){
+  const full = kelvinToRGB(state.kelvin);
+  const inv = (1-p)* (state.dimOnStarter?1:1);
+  return {
+    r: full.r,
+    g: clampN(Math.round(full.g - state.offG*inv),0,255),
+    b: clampN(Math.round(full.b - state.offB*inv),0,255),
+  };
+}
+/* glowing filament visual color: runs hot-cold like a real bulb */
+function filamentColor(p){
+  const k = 750 + p*(state.kelvin-750);
+  return kelvinToRGB(clampN(k,700,4300));
+}
+
+/* ================= SCENE RENDER ================= */
+const dust = Array.from({length:50},()=>({x:Math.random(),y:Math.random(),s:Math.random()*1.6+0.4,v:Math.random()*0.02+0.005}));
+
+function drawScene(pLo, pHi, x0, x1, label, mono){
+  const ctx = sctx, w = S.w, h = S.h;
+  ctx.save();
+  ctx.beginPath(); ctx.rect(x0,0,x1-x0,h); ctx.clip();
+
+  const wallY = h*0.62;
+  // bg
+  ctx.fillStyle = '#060708'; ctx.fillRect(x0,0,x1-x0,h);
+  // wall panel lines
+  ctx.strokeStyle = 'rgba(255,255,255,0.02)'; ctx.lineWidth = 1;
+  for(let i=1;i<8;i++){ ctx.beginPath(); ctx.moveTo(x0+(x1-x0)*i/8,0); ctx.lineTo(x0+(x1-x0)*i/8,wallY); ctx.stroke(); }
+  // floor
+  ctx.fillStyle = '#040404'; ctx.fillRect(x0,wallY,x1-x0,h-wallY);
+  ctx.strokeStyle = 'rgba(255,255,255,0.03)'; ctx.beginPath(); ctx.moveTo(x0,wallY); ctx.lineTo(x1,wallY); ctx.stroke();
+  // faint floor perspective
+  ctx.strokeStyle = 'rgba(255,255,255,0.02)';
+  const cx = x0+(x1-x0)/2;
+  for(let i=-3;i<=3;i++){ ctx.beginPath(); ctx.moveTo(cx, h); ctx.lineTo(cx+i*40, wallY); ctx.stroke(); }
+
+  const bulbs = [
+    {x: x0+(x1-x0)*0.28, y: h*0.42},
+    {x: x0+(x1-x0)*0.72, y: h*0.42},
+  ];
+  const R = h*0.048;
+
+  const p = pLo, hp = pHi;
+  if(p>0.004 || hp>0.004){
+    const col = partialColor(Math.max(p,0.02));
+    const css = `rgb(${col.r},${col.g},${col.b})`;
+
+    for(const b of bulbs){
+      // volumetric cone to floor
+      const spread = R*(7 + 7*hp);
+      const coneAlpha = (0.14*p + 0.16*hp);
+      let g1 = ctx.createLinearGradient(b.x, b.y, b.x, wallY+h*0.14);
+      g1.addColorStop(0, `rgba(${col.r},${col.g},${col.b},${coneAlpha})`);
+      g1.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = g1;
+      ctx.beginPath();
+      ctx.moveTo(b.x, b.y);
+      ctx.lineTo(b.x-spread*0.5, wallY+h*0.14);
+      ctx.lineTo(b.x+spread*0.5, wallY+h*0.14);
+      ctx.closePath(); ctx.fill();
+
+      // floor pool
+      const pool = ctx.createRadialGradient(b.x, wallY+h*0.075, 0, b.x, wallY+h*0.075, spread*0.62);
+      pool.addColorStop(0, `rgba(${col.r},${col.g},${col.b},${0.5*p + 0.5*hp})`);
+      pool.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.save(); ctx.translate(b.x, wallY+h*0.075); ctx.scale(1, 0.16); ctx.translate(-b.x, -(wallY+h*0.075));
+      ctx.fillStyle = pool; ctx.beginPath(); ctx.arc(b.x, wallY+h*0.075, spread*0.62, 0, Math.PI*2); ctx.fill(); ctx.restore();
+    }
+
+    // wall hotspots (glow ball at each bulb)
+    const hotspot = (bx, by, inten, scaleF)=>{
+      const halo = ctx.createRadialGradient(bx,by,0,bx,by,R*13*scaleF);
+      halo.addColorStop(0, `rgba(255,${clampN(col.g+30,0,255)},${clampN(col.b+20,0,255)},${0.85*inten})`);
+      halo.addColorStop(0.18, `rgba(${col.r},${col.g},${col.b},${0.32*inten})`);
+      halo.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = halo; ctx.beginPath(); ctx.arc(bx,by,R*13*scaleF,0,Math.PI*2); ctx.fill();
+    };
+    if(p>0.004) for(const b of bulbs) hotspot(b.x, b.y, p, 1);
+    if(hp>0.004) for(const b of bulbs) hotspot(b.x, b.y-h*0.045, hp, 1.15);
+  }
+
+  // bulb housings
+  for(const b of bulbs){
+    // housing dark plate
+    ctx.fillStyle = '#0e0f10';
+    ctx.beginPath(); ctx.arc(b.x, b.y, R*1.35, 0, Math.PI*2); ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.07)'; ctx.lineWidth = 1.2;
+    ctx.beginPath(); ctx.arc(b.x, b.y, R*1.35, 0, Math.PI*2); ctx.stroke();
+
+    // filament
+    const inten = Math.max(p, 0);
+    const fc = filamentColor(inten);
+    const shimmer = (inten>0.001 && inten<0.25) ? (Math.random()-0.5)*0.35 : 0;
+    const fi = clampN(inten+shimmer*inten,0,1);
+    if(fi>0.004){
+      const fs = state.flareMin + (1-state.flareMin)*fi;
+      ctx.save();
+      ctx.shadowColor = `rgba(${fc.r},${fc.g},${fc.b},${0.9*fi})`;
+      ctx.shadowBlur = 40*fi*fs;
+      ctx.fillStyle = `rgba(${fc.r},${fc.g},${fc.b},${fi})`;
+      ctx.beginPath(); ctx.arc(b.x, b.y, R*0.5*fs, 0, Math.PI*2); ctx.fill();
+      ctx.restore();
+    } else {
+      ctx.fillStyle = '#1c1d1f';
+      ctx.beginPath(); ctx.arc(b.x, b.y, R*0.5, 0, Math.PI*2); ctx.fill();
+    }
+  }
+
+  // dust in the beams
+  if(p>0.05){
+    const col = partialColor(p);
+    ctx.fillStyle = `rgba(${col.r},${col.g},${col.b},1)`;
+    for(const d of dust){
+      d.y += d.v*0.016; if(d.y>1) d.y=0;
+      ctx.globalAlpha = p*0.06;
+      ctx.beginPath(); ctx.arc(x0+(x1-x0)*d.x, d.y*h, d.s, 0, Math.PI*2); ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  // label
+  if(label){
+    ctx.fillStyle = 'rgba(255,255,255,0.28)';
+    ctx.font = '600 10px "JetBrains Mono", monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText(label, x0+(x1-x0)/2, 22);
+  }
+
+  ctx.restore();
+}
+
+/* ================= CHART ================= */
+let curveData = null;
+function buildCurve(){
+  // simulate a 4.2s cycle: ON for 1.4s, OFF for 2.8s
+  const T = 4.2, dt = 1/240, onDur = 1.4;
+  const pts = []; let p = 0;
+  for(let t=0; t<=T; t+=dt){
+    const target = (t % T) < onDur ? 1 : 0;
+    p = stepFilament(p, target, dt);
+    pts.push({t, p, target});
+  }
+  curveData = pts;
+}
+
+function drawChart(now){
+  const ctx = cctx, w = C.w, h = C.h;
+  ctx.clearRect(0,0,w,h);
+  // grid
+  ctx.strokeStyle = 'rgba(255,255,255,0.04)'; ctx.lineWidth = 1;
+  for(let i=1;i<4;i++){ const y=h*i/4; ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke(); }
+  if(!curveData) return;
+  const T = 4.2;
+  const X = t => t/T*w, Y = p => h - 6 - p*(h-14);
+
+  // stock (dashed)
+  ctx.setLineDash([4,4]);
+  ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+  ctx.beginPath();
+  curveData.forEach((d,i)=>{ i===0?ctx.moveTo(X(d.t),Y(d.target)):ctx.lineTo(X(d.t),Y(d.target)); });
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // halogen
+  const grad = ctx.createLinearGradient(0,0,w,0);
+  grad.addColorStop(0,'#ff6a00'); grad.addColorStop(1,'#ffb066');
+  ctx.strokeStyle = grad; ctx.lineWidth = 2; ctx.lineJoin = 'round';
+  ctx.beginPath();
+  curveData.forEach((d,i)=>{ i===0?ctx.moveTo(X(d.t),Y(d.p)):ctx.lineTo(X(d.t),Y(d.p)); });
+  ctx.stroke();
+  ctx.lineWidth = 1;
+
+  // live dot
+  const tNow = (now/1000) % T;
+  let d = curveData[0];
+  for(const pt of curveData){ if(pt.t <= tNow) d = pt; else break; }
+  ctx.fillStyle = '#ffb066';
+  ctx.shadowColor = '#ff6a00'; ctx.shadowBlur = 8;
+  ctx.beginPath(); ctx.arc(X(d.t), Y(d.p), 3, 0, Math.PI*2); ctx.fill();
+  ctx.shadowBlur = 0;
+}
+
+/* ================= MAIN LOOP ================= */
+let last = performance.now();
+function frame(now){
+  const dt = Math.min((now-last)/1000, 0.05); last = now;
+
+  let tLo = state.lowOn ? 1 : 0, tHi = state.highOn ? 1 : 0;
+  if(state.autoCycle){
+    const cyc = (now/1000) % 4.2 < 1.4;
+    tLo = cyc ? 1 : 0; tHi = 0;
+  }
+  pLow = stepFilament(pLow, tLo, dt);
+  pHigh = stepFilament(pHigh, tHi, dt);
+
+  if(state.compare){
+    drawScene(tLo, tHi, 0, S.w/2, 'STOCK — INSTANT', true);
+    drawScene(pLow, pHigh, S.w/2, S.w, 'HALOGEN — SMOOTH', true);
+    sctx.strokeStyle = 'rgba(255,255,255,0.15)';
+    sctx.setLineDash([3,5]);
+    sctx.beginPath(); sctx.moveTo(S.w/2, 8); sctx.lineTo(S.w/2, S.h-8); sctx.stroke();
+    sctx.setLineDash([]);
+  } else {
+    drawScene(pLow, pHigh, 0, S.w, null, false);
+  }
+
+  // vignette
+  const vg = sctx.createRadialGradient(S.w/2, S.h/2, S.h*0.3, S.w/2, S.h/2, S.h*0.95);
+  vg.addColorStop(0,'rgba(0,0,0,0)'); vg.addColorStop(1,'rgba(0,0,0,0.5)');
+  sctx.fillStyle = vg; sctx.fillRect(0,0,S.w,S.h);
+
+  // readout
+  const pct = Math.round(pLow*100);
+  let label = 'OFF';
+  if(state.autoCycle || state.lowOn){ label = pLow>0.97 ? 'FULL GLOW' : 'WARMING UP'; }
+  else if(pLow>0.02){ label = 'COOLING DOWN'; }
+  document.getElementById('readout').textContent = `FILAMENT ${pct}% · ${label}`;
+  document.getElementById('readout').style.color = pct>2 ? '#ffb066' : '#71717a';
+
+  drawChart(now);
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+/* ================= JBEAM CODE GENERATION ================= */
+function buildJbeam(){
+  const rgb = kelvinToRGB(state.kelvin);
+  const rIn = state.rateIn, rOut = state.rateOut;
+  const dim = state.dimOnStarter ? ' * electrics.electricalLoadCoef' : '';
+  const f = n => `"${n}","temporalNonLinear", [${rIn}, ${rOut}]`;
+
+  const rows = [], smooth = [];
+  const L = state.lights;
+  if(L.low){ rows.push(`["lowbeam_filament", "electrics.lowbeam${dim}", 0]`); smooth.push(f('lowbeam_filament')); }
+  if(L.high){ rows.push(`["highbeam_filament", "electrics.highbeam${dim}", 0]`); smooth.push(f('highbeam_filament')); }
+  if(L.tail){ rows.push(`["taillight_filament", "electrics.lowhighbeam${dim}", 0]`); smooth.push(f('taillight_filament')); }
+  if(L.brake){ rows.push(`["brakelight_filament", "electrics.brakelights${dim}", 0]`); smooth.push(f('brakelight_filament')); }
+  if(L.fog){ rows.push(`["foglight_filament", "electrics.fog${dim}", 0]`); smooth.push(f('foglight_filament')); }
+  if(L.rev){ rows.push(`["reverselight_filament", "electrics.reverse${dim}", 0]`); smooth.push(f('reverselight_filament')); }
+  if(L.sig){
+    rows.push(`["signal_L_filament", "electrics.signal_L${dim}", 0]`,`["signal_R_filament", "electrics.signal_R${dim}", 0]`);
+    smooth.push(`"signal_L_filament","temporalNonLinear", [${Math.min(rIn+5,20)}, ${Math.min(rIn+5,20)}]`,`"signal_R_filament","temporalNonLinear", [${Math.min(rIn+5,20)}, ${Math.min(rIn+5,20)}]`);
+  }
+  if(rows.length===0){ rows.push(`// no lights selected — pick some above`); smooth.push(`// …`); }
+
+  const scaling = `{"brightnessMinInput":0, "brightnessMaxInput":1, "flareScaleMinInput":${state.flareMin.toFixed(2)}, "flareScaleMaxInput":1, "lightColorOffsetRed":0, "lightColorOffsetGreen":${state.offG}, "lightColorOffsetBlue":${state.offB}}`;
+  const color = `{"r":${rgb.r}, "g":${rgb.g}, "b":${rgb.b}, "a":255}`;
+
+  const code = `// ============================================
+//  HALOGEN SMOOTH FADE — BeamNG v0.34+
+//  warm-up ~${approxTime(rIn).toFixed(2)}s · cool-down ~${approxTime(rOut).toFixed(2)}s · ${state.kelvin}K
+// ============================================
+
+// STEP 1 — paste this "electrics" block into your car's
+// MAIN jbeam (same level as "nodes", "beams", "props")
+"electrics": {
+    "customValues": [
+        ["electricsName", "electricsFunction", "electricsDefault"],
+        ${rows.join(',\n        ')}
+    ],
+    "smoothers": [
+        ["electricsName", "smootherType", "params"],
+        ${smooth.map(s=>`[${s}]`).join(',\n        ')}
+    ]
+},
+
+
+// STEP 2 — in the jbeam that has your HEADLIGHT props:
+// change the function argument from "lowbeam" to
+// "lowbeam_filament", then add lightScaling + lightColor.
+// KEEP your car's own node names (fa2rr etc) — only the
+// first argument + the added options change.
+
+// BEFORE:
+// ["lowbeam", "SPOTLIGHT", "fa2rr", "fa2r", "fa1rr", ...]
+
+// AFTER  (low beam example):
+["lowbeam_filament", "SPOTLIGHT", "fa2rr", "fa2r", "fa1rr", {"x":180,"y":0,"z":10}, {"x":0,"y":0,"z":0}, {"x":0,"y":0,"z":0}, 0, 0, 0, 1, {
+    "lightColor":${color},
+    "lightScaling":${scaling},
+    // ...keep your existing lightRange / angles / groups
+}],
+
+// high beam (if enabled): same swap, use "highbeam_filament"
+// do the same pattern for every light you enabled.
+// the glowMap material transitions will follow automatically.`;
+  return code;
+}
+
+/* syntax highlight */
+function hl(code){
+  let e = code.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  e = e.replace(/(\/\/[^\n]*)/g, '<span class="c">$1</span>');
+  e = e.replace(/(&quot;|")([^"\n]*)(")/g, '<span class="s">"$2"</span>');
+  e = e.replace(/([:\[\s,{])(-?\d+\.?\d*)/g, '$1<span class="n">$2</span>');
+  return e;
+}
+
+let currentCode = '';
+function regenerate(){
+  currentCode = buildJbeam();
+  document.getElementById('codeOut').innerHTML = hl(currentCode);
+  document.getElementById('lineCount').textContent = currentCode.split('\n').length + ' LINES';
+}
+
+/* ================= UI WIRING ================= */
+const $ = id => document.getElementById(id);
+function updateStats(){
+  $('statWarm').textContent = '~' + approxTime(state.rateIn).toFixed(2) + 's';
+  $('statCool').textContent = '~' + approxTime(state.rateOut).toFixed(2) + 's';
+  $('statK').textContent = state.kelvin;
+  $('kLabel').textContent = tempLabel(state.kelvin);
+  const rgb = kelvinToRGB(state.kelvin);
+  $('swatch').style.background = `rgb(${rgb.r},${rgb.g},${rgb.b})`;
+  $('swatch').style.boxShadow = `0 0 18px rgb(${rgb.r},${rgb.g},${rgb.b})`;
+  $('rgbOut').textContent = `r:${rgb.r} g:${rgb.g} b:${rgb.b}`;
+  $('vIn').textContent = state.rateIn; $('vOut').textContent = state.rateOut;
+  $('vK').textContent = state.kelvin; $('vG').textContent = state.offG;
+  $('vB').textContent = state.offB; $('vF').textContent = state.flareMin.toFixed(2);
+}
+
+$('sIn').addEventListener('input', e=>{ state.rateIn = +e.target.value; updateStats(); buildCurve(); regenerate(); });
+$('sOut').addEventListener('input', e=>{ state.rateOut = +e.target.value; updateStats(); buildCurve(); regenerate(); });
+$('sK').addEventListener('input', e=>{ state.kelvin = +e.target.value; updateStats(); regenerate(); });
+$('sG').addEventListener('input', e=>{ state.offG = +e.target.value; updateStats(); regenerate(); });
+$('sB').addEventListener('input', e=>{ state.offB = +e.target.value; updateStats(); regenerate(); });
+$('sF').addEventListener('input', e=>{ state.flareMin = +e.target.value; updateStats(); regenerate(); });
+$('cDim').addEventListener('change', e=>{ state.dimOnStarter = e.target.checked; regenerate(); });
+[['cLow','low'],['cHigh','high'],['cTail','tail'],['cBrake','brake'],['cFog','fog'],['cRev','rev'],['cSig','sig']]
+  .forEach(([id,key])=> $(id).addEventListener('change', e=>{ state.lights[key] = e.target.checked; regenerate(); }));
+
+function bindPower(btn, onChange){
+  $(btn).addEventListener('click', ()=>{ $(btn).classList.toggle('on'); onChange($(btn).classList.contains('on')); });
+}
+bindPower('btnLow', v=>{ state.lowOn = v; if(v) state.autoCycle = false, $('btnCycle').classList.remove('on'); });
+bindPower('btnHigh', v=>{ state.highOn = v; });
+bindPower('btnCompare', v=>{ state.compare = v; });
+bindPower('btnCycle', v=>{ state.autoCycle = v; if(v){ $('btnLow').classList.add('on'); $('btnHigh').classList.remove('on'); state.highOn=false; } });
+
+/* copy + download */
+$('btnCopy').addEventListener('click', async ()=>{
+  try{
+    await navigator.clipboard.writeText(currentCode);
+    $('btnCopy').innerHTML = '<i data-lucide="check" class="w-3.5 h-3.5"></i> COPIED';
+    lucide.createIcons();
+    setTimeout(()=>{ $('btnCopy').innerHTML = '<i data-lucide="copy" class="w-3.5 h-3.5"></i> COPY'; lucide.createIcons(); }, 1600);
+  }catch(e){}
+});
+$('btnDl').addEventListener('click', ()=>{
+  const blob = new Blob([currentCode], {type:'text/plain'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'halogen_fade.jbeam';
+  a.click();
+  URL.revokeObjectURL(a.href);
+});
+
+/* ============ YOUR CAR FIX (cher8) ============ */
+const cher8Fix = `"glowMap":{
+    "cher8_taillight":{"simpleFunction":{"lowhighbeam_filament":0.49}, "off":"cher8_lights", "on":"cher8_lights_on", "on_intense":"cher8_lights_on_intense"},
+    "cher8_brakelight_single":{"simpleFunction":{"brakelight_filament":0.49}, "off":"cher8_lights", "on":"cher8_lights_on", "on_intense":"cher8_lights_on_intense"},
+    "cher8_brakelight_R":{"simpleFunction":{"brakeSignal_R_filament":1,"lowhighbeam_filament":0.49}, "off":"cher8_lights", "on":"cher8_lights_on", "on_intense":"cher8_lights_on_intense"},
+    "cher8_brakelight_L":{"simpleFunction":{"brakeSignal_L_filament":1,"lowhighbeam_filament":0.49}, "off":"cher8_lights", "on":"cher8_lights_on", "on_intense":"cher8_lights_on_intense"},
+    "cher8_foglight":     {"simpleFunction":{"foglight_filament":1}, "off":"cher8_lights", "on":"cher8_lights_on_intense", "on_intense":"cher8_lights_on_intense"},
+    "cher8_signal_FL":{"simpleFunction":{"signal_L_filament":1}, "off":"cher8_lights_h", "on":"cher8_lights_on_or", "on_intense":"cher8_lights_on_intense_or"},
+    "cher8_signal_FR":{"simpleFunction":{"signal_R_filament":1}, "off":"cher8_lights_h", "on":"cher8_lights_on_or", "on_intense":"cher8_lights_on_intense_or"},
+    "cher8_signal_L":{"simpleFunction":{"signal_L_filament":0.49}, "off":"cher8_lights", "on":"cher8_lights_on", "on_intense":"cher8_lights_on_intense"},
+    "cher8_signal_R":{"simpleFunction":{"signal_R_filament":0.49}, "off":"cher8_lights", "on":"cher8_lights_on", "on_intense":"cher8_lights_on_intense"},
+    "cher8_chmsl":{"simpleFunction":{"brakelight_filament":100}, "off":"cher8_lights", "on":"cher8_lights_on", "on_intense":"cher8_lights_on_intense"},
+    "cher8_lowbeam":{"simpleFunction":{"lowhighbeam_filament":0.49}, "off":"cher8_lights_h", "on":"cher8_lights_on_h", "on_intense":"cher8_lights_on_intense_h"},
+    "cher8_highbeam":{"simpleFunction":{"running":1, "highbeam_filament":1}, "off":"cher8_lights_h", "on":"cher8_lights_on_h", "on_intense":"cher8_lights_on_intense_h"},
+    "cher8_reverselight":{"simpleFunction":{"reverselight_filament":0.49}, "off":"cher8_lights", "on":"cher8_lights_on", "on_intense":"cher8_lights_on_intense"},
+    "cher8_gauges":{"simpleFunction":{"running":1}, "off":"cher8_gauges", "on":"cher8_gauges_on"},
+
+    "cher8_brakelight_R2":{"simpleFunction":{"brakelight_filament":1,"lowhighbeam_filament":0.49}, "off":"cher8_lights", "on":"cher8_lights_on", "on_intense":"cher8_lights_on_intense"},
+    "cher8_brakelight_L2":{"simpleFunction":{"brakelight_filament":1,"lowhighbeam_filament":0.49}, "off":"cher8_lights", "on":"cher8_lights_on", "on_intense":"cher8_lights_on_intense"},
+    "cher8_signal_RL2":{"simpleFunction":{"signal_L_filament":0.49}, "off":"cher8_lights", "on":"cher8_lights_on", "on_intense":"cher8_lights_on_intense"},
+    "cher8_signal_RR2":{"simpleFunction":{"signal_R_filament":0.49}, "off":"cher8_lights", "on":"cher8_lights_on", "on_intense":"cher8_lights_on_intense"},
+    "cher8_signal_red_RL2":{"simpleFunction":{"signal_L_filament":0.49}, "off":"cher8_lights", "on":"cher8_lights_on", "on_intense":"cher8_lights_on_intense"},
+    "cher8_signal_red_RR2":{"simpleFunction":{"signal_R_filament":0.49}, "off":"cher8_lights", "on":"cher8_lights_on", "on_intense":"cher8_lights_on_intense"},
+
+    // --- unchanged below: dashboard tell-tales stay instant, not halogen bulbs ---
+    "cher8g_signal_L":{"simpleFunction":"signal_L", "off":"invis", "on":"decals_gauges"},
+    "cher8g_signal_R":{"simpleFunction":"signal_R", "off":"invis", "on":"decals_gauges"},
+    "cher8g_fog":{"simpleFunction":"fog", "off":"invis", "on":"decals_gauges"},
+    "cher8g_checkengine":{"simpleFunction":{"SN95NEYBCsystemscheck":0.1,"checkengine":0.1,"mustanglighttestmp":0.1}, "off":"invis", "on":"jeep_decals_gauges"},
+    "cher8g_battery":{"simpleFunction":{"SN95NEYBCsystemscheck":0.1,"mustanglighttestmp":0.1}, "off":"invis", "on":"cher8_decals_gauges"},
+    "cher8g_highbeam":{"simpleFunction":"highbeam", "off":"invis", "on":"decals_gauges"},
+    "cher8g_oilwarn":{"simpleFunction":{"SN95NEYBCsystemscheck":0.1, "oilwarn":0.1, "mustanglighttestmp":0.1}, "off":"invis", "on":"decals_gauges"},
+    "cher8g_parkingbrake":{"simpleFunction":{"parkingbrakelight":0.1,"mustanglighttestmp":0.1}, "off":"invis", "on":"cher8_decals_gauges"},
+    "cher8g_lowpressure":{"simpleFunction":{"lowpressure":0.1,"mustanglighttestmp":0.1}, "off":"invis", "on":"decals_gauges"},
+    "cher8g_abs":{"simpleFunction":{"abs":0.1,"mustanglighttestmp":0.1}, "off":"invis", "on":"cher8_decals_gauges"},
+    "cher8g_seatbelt":{"simpleFunction":{"mustanglighttestmp":0.1}, "off":"invis", "on":"cher8_decals_gauges"},
+    "cher8g_esc":{"simpleFunction":"esc", "off":"invis", "on":"decals_gauges"},
+},`;
+
+function hlFix(code){
+  let e = code.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  e = e.replace(/(\/\/[^\n]*)/g, '<span class="c">$1</span>');
+  e = e.replace(/(&quot;|")([^"\n]*)(")/g, '<span class="s">"$2"</span>');
+  e = e.replace(/([:\[\s,{])(-?\d+\.?\d*)/g, '$1<span class="n">$2</span>');
+  return e;
+}
+document.getElementById('fixOut').innerHTML = hlFix(cher8Fix);
+document.getElementById('btnCopyFix').addEventListener('click', async ()=>{
+  try{
+    await navigator.clipboard.writeText(cher8Fix);
+    const b = document.getElementById('btnCopyFix');
+    b.innerHTML = '<i data-lucide="check" class="w-3.5 h-3.5"></i> COPIED';
+    lucide.createIcons();
+    setTimeout(()=>{ b.innerHTML = '<i data-lucide="copy" class="w-3.5 h-3.5"></i> COPY FIX'; lucide.createIcons(); }, 1600);
+  }catch(e){}
+});
+
+/* init */
+updateStats(); buildCurve(); regenerate();
+// start with low beam visually on
+pLow = 0;
+lucide.createIcons();
+</script>
+</body>
+</html>
